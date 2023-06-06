@@ -12,9 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-
-print(f"SQL uri is: ${app.config['SQLALCHEMY_DATABASE_URI']}")
-
 class Counter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.Integer, default=0)
