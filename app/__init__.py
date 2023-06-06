@@ -8,10 +8,12 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
-    f"mysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
+    f"mysql://root:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+
+print(f"SQL uri is: ${app.config['SQLALCHEMY_DATABASE_URI']}")
 
 class Counter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +24,12 @@ class Counter(db.Model):
 def home():
     counter = Counter.query.get(1)
 
+    if counter is None:
+        # Create a new counter record if it doesn't exist
+        counter = Counter()
+        db.session.add(counter)
+        db.session.commit()
+
     if request.method == 'POST':
         if request.form['action'] == 'increment':
             counter.value += 1
@@ -30,6 +38,7 @@ def home():
         db.session.commit()
 
     return render_template('index.html', counter=counter.value)
+
 
 
 if __name__ == '__main__':
