@@ -1,6 +1,8 @@
 # Base image
 FROM python:3.10-slim
 
+RUN useradd flaskapp
+
 # Set working directory
 WORKDIR /app
 
@@ -15,6 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . .
+
+RUN chmod +x boot.sh
+RUN chown -R flaskapp:flaskapp ./
+USER flaskapp
 
 # Expose the port on which the Flask app will run
 EXPOSE 5000
